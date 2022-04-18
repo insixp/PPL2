@@ -1,77 +1,113 @@
 (define make-ok
   (lambda (val)
-    @TODO
+    (cons #t val)
   )
  )
  
+
 (define make-error
   (lambda (msg)
-    @TODO
+    (cons #f msg)
   )
  )
 
+
 (define ok?
   (lambda (res)
-    @TODO
+  (if (result? res)   (if (= (car res) #t) #t #f)  #f )
+    
   )
  )
 
 (define error?
   (lambda (res)
-    @TODO
+  (if (result? res ) (if (=(car res) #f) #t #f)   #f)
   )
+    
+  
  )
 
 (define result?
   (lambda (res)
-    @TODO
+    (if (pair? res) (if(=(car res) #t) #t (if(=(car res) #f) #t #f))  #f)
   )
  )
 
 (define result->val
   (lambda (res)
-    @TODO
+     (cdr res) 
   )
 )
 
 (define bind 
   (lambda (f)
-    @TODO
+    (lambda (res)
+     (if (=(car res) #t) (f (result->val res)) res)
+      
+    )
   )
 )
 
 (define make-dict
   (lambda ()
-    @TODO
+    (list)
   )
 )
 
 (define dict?
   (lambda (e)
-    @TODO
+    (if (empty? e) #t (if (pair? (car e)) (dict? (cdr e)) #f ) )
   )
 )
 
 (define get
   (lambda (dict k)
-    @TODO
+    ( if (dict? dict) (if (empty? dict) (make-error "Key not found") (if (= (car (car dict)) k) (make-ok (cdr (car dict))) (get (cdr dict) k) ) ) 
+    (make-ok "Error: not a dictionary"))
+  )
+)
+
+(define change-value 
+  (lambda (dict k v)
+    (if (empty? dict) dict 
+      (if (= (car(car dict)) k) (cons (cons k v) (cdr dict))
+       (cons (car dict) (change-value (cdr dict) k v) ) ) )
+
   )
 )
 
 (define put
   (lambda (dict k v)
-    @TODO
+   (if (dict? dict) (if (ok? (get dict k)) (make-ok (change-value dict k v)) (make-ok (cons(cons k v) dict)) ) (make-ok "Error: not a dictionary"))
   )
 )
 
-(define map-dict
+
+
+(define map-dict-apply 
   (lambda (dict f)
-    @TODO
+    (if (empty? dict) dict 
+       (cons (cons (car(car dict)) (f (cdr(car dict)))) (map-dict-apply (cdr dict) f)))
   )
 )
 
-(define filter-dict
-  (lambda (dict pred)
-    @TODO
+(define map-dict 
+  (lambda (dict f)
+    (make-ok (map-dict-apply dict f))
   )
 )
+
+(define filter-dict-apply 
+  (lambda (dict pred)
+    (if (empty? dict) dict 
+      (if (pred (car(car dict)) (cdr(car dict))) (cons (car dict) (filter-dict-apply (cdr dict) pred)) (filter-dict-apply (cdr dict) pred)))
+  )
+)
+
+
+(define filter-dict 
+  (lambda (dict pred)
+    (make-ok (filter-dict-apply dict pred))
+  )
+)
+
