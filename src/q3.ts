@@ -42,7 +42,3 @@ export const L31ToL3 = (exp: Exp | Program): Result<Exp | Program> =>
     isProgram(exp)  ? makeOk(makeProgram(map(rewriteLetPlusExp, exp.exps))) :
     isExp(exp)      ? makeOk(rewriteLetPlusExp(exp)) :
     makeOk(exp);
-
-
-const f = (x : Program | Exp) : Result<string> => makeOk(unparseL31(x));
-console.log(bind(bind(bind(parse("(let* ((x 5) (y 7)) (+ x y))"), parseL31Exp), L31ToL3), f))
