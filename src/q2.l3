@@ -1,59 +1,49 @@
 (define make-ok
   (lambda (val)
-    (cons "Ok" val)
+    (cons #t val)
   )
  )
  
 
 (define make-error
   (lambda (msg)
-    (cons "Failure" msg)
+    (cons #f msg)
   )
  )
 
 
 (define ok?
   (lambda (res)
-    (if (result? res)
-      (= (car res) "Ok")
-      #f
-    )
+  (if (result? res)   (if (= (car res) #t) #t #f)  #f )
+    
   )
-)
+ )
 
 (define error?
   (lambda (res)
-    (if (result? res)
-      (= (car res) "Failure")
-      #f)
+  (if (result? res ) (if (=(car res) #f) #t #f)   #f)
   )
+    
+  
  )
 
 (define result?
   (lambda (res)
-    (if (pair? res)
-      (if (or (= (car res) "Ok") (= (car res) "Failure"))
-      #t
-      #f)
-    #f
-    )
+    (if (pair? res) (if(=(car res) #t) #t (if(=(car res) #f) #t #f))  #f)
   )
  )
 
 (define result->val
   (lambda (res)
-    (if (result? res)
-      (cdr res)
-      (make-error "Not Result"))
+     (cdr res) 
   )
 )
 
 (define bind 
   (lambda (f)
     (lambda (res)
-      (if (ok? res)
-        (f (result->val res))
-        res)
+     (if (=(car res) #t) (f (result->val res)) res)
+      
     )
   )
 )
@@ -66,60 +56,33 @@
 
 (define dict?
   (lambda (e)
-    (if (empty? e)
-      #t
-      (if (pair? (car e))
-        (dict? (cdr e))
-        #f
-      )
-    )
+    (if (empty? e) #t (if (pair? (car e)) (dict? (cdr e)) #f ) )
   )
 )
 
 (define get
   (lambda (dict k)
-    (if(dict? dict)
-      (if (empty? dict)
-        (make-ok "Key not found")
-        (if (= (car (car dict)) k)
-          (make-ok (cdr (car dict)))
-          (get (cdr dict) k)
-        )
-      )
-      (make-ok "Error: not a dictionary")
-    )
+    ( if (dict? dict) (if (empty? dict) (make-error "Key not found") (if (= (car (car dict)) k) (make-ok (cdr (car dict))) (get (cdr dict) k) ) ) 
+    (make-ok "Error: not a dictionary"))
   )
 )
 
 (define change-value 
   (lambda (dict k v)
-    (if (dict? dict)
-      (if (empty? dict)
-        (make-ok "Key not found")
-        (if (= (car (car dict)) k)
-          (make-ok (cons '(k . v) (cdr dict)))
-          (change-value (cdr dict) k v)
-        )
-      )
-      (make-ok "Error: not a dictionary")
-    )
+    (if (empty? dict) dict 
+      (if (= (car(car dict)) k) (cons (cons k v) (cdr dict))
+       (cons (car dict) (change-value (cdr dict) k v) ) ) )
+
   )
 )
 
 (define put
   (lambda (dict k v)
-    (if (dict? dict)
-      (if (empty? dict)
-        (make-ok (cons (cons k v) (make-dict)))
-        (if (= (car (car dict)) k)
-          (make-ok (cons (cons k v) (cdr dict)))
-          (put (cdr dict) k v)
-        )        
-      )
-      (make-ok "Error: not a dictionary")
-    )
+   (if (dict? dict) (if (ok? (get dict k)) (make-ok (change-value dict k v)) (make-ok (cons(cons k v) dict)) ) (make-ok "Error: not a dictionary"))
   )
 )
+
+
 
 (define map-dict-apply 
   (lambda (dict f)

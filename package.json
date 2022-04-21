@@ -4,7 +4,7 @@
   "description": "Code for \"Principles of Programming Languages\" course",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/q4.test.ts",
+    "test": "mocha --require ts-node/register test/**/*.test.ts",
     "coverage": "nyc --reporter=html npm test"
   },
   "keywords": [],
