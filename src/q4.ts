@@ -3,7 +3,7 @@ import { isProgram,isExp, isCExp, isDefineExp, isNumExp, isBoolExp, isStrExp, is
 import { makeProgram, makeDefineExp, makeNumExp, makeBoolExp, makeStrExp, makePrimOp, makeVarRef, makeVarDecl, makeAppExp, makeIfExp, makeProcExp, makeBinding, makeLetExp, makeLitExp } from "../imp/L3-ast";
 import { Closure, SExpValue, isClosure, isSymbolSExp} from '../imp/L3-value'
 import { first, rest} from '../shared/list'
-import { Result, makeFailure, makeOk,bind } from '../shared/result';
+import { Result, makeFailure, makeOk } from '../shared/result';
 import { isString } from "../shared/type-predicates";
 import { map, reduce, isEmpty } from 'ramda';
 
@@ -79,5 +79,3 @@ export const l30ToJS = (exp: Exp | Program): Result<string>  =>
     isProgram(exp)  ? makeOk(mergeStrings(map(parseExpToJS, exp.exps), ";\n")) :
     isExp(exp)      ? makeOk(parseExpToJS(exp)) :
     makeFailure("Not Expression");
-
-    console.log((bind(parseL3("(L3 (symbol? 2))"), l30ToJS)));
